@@ -1,34 +1,32 @@
 import React from "react"
 import Main from "../layouts/Main";
-import Cart from "../component/Card"
 import {SimpleGrid, Box, Heading, Center, Badge} from '@chakra-ui/react'
 
-import client from "../lib/Commerce";
 
-const Index = ({products }) => {
-    console.log(products)
+import client from "../lib/Commerce";
+import Category from "../component/Category";
+
+const Categories = ({categories }) => {
     return (
         <>
             <>
                 <Main>
                     <Box>
                         <Center>
-                            <Box py={10} width={"55%"}>
+                            <Box my={10} pt={10} width={"65%"}>
                                 <Heading>
-                                    Все товары <Badge rounded="full" px="4" fontSize="0.8em" bg={"black"} color={"white"}>
-                                    {products.length}
+                                    Все категории <Badge rounded="full" px="4" fontSize="0.8em" bg={"black"} color={"white"}>
+                                    {categories.length}
                                 </Badge>
                                 </Heading>
                             </Box>
                         </Center>
-                        <Center>
-                            <SimpleGrid columns={[1, null, 3]} spacingX='40px'>
+                        <Center py={10}>
+                            <SimpleGrid columns={[1, null, 3]} spacingX='120px'>
                                 {
-                                    products.map(product=>(
+                                    categories.map((category,value)=>(
                                         <Box>
-                                            <Center>
-                                                <Cart data={product}/>
-                                            </Center>
+                                            <Category id={category.id} image={category.assets[0].url} name={category.name}/>
                                         </Box>
                                     ))
                                 }
@@ -42,13 +40,13 @@ const Index = ({products }) => {
 }
 
 export async function getServerSideProps() {
-    const { data: products } = await client.products.list();
+    const { data: categories } = await client.categories.list();
 
     return {
         props: {
-            products,
+            categories,
         },
     };
 }
 
-export default Index
+export default Categories

@@ -1,22 +1,25 @@
-import React from "react"
-import Main from "../layouts/Main";
-import Cart from "../component/Card"
+import React,{useState} from "react"
+import Main from "../../layouts/Main";
+import Cart from "../../component/Card"
 import {SimpleGrid, Box, Heading, Center, Badge} from '@chakra-ui/react'
 
-import client from "../lib/Commerce";
+import client from "../../lib/Commerce";
+import {useRouter} from "next/router";
 
-const Index = ({products }) => {
-    console.log(products)
+const GoodsByCategory = ({data}) => {
+    const router=useRouter();
+    const [category,setCategory] = useState("")
+    client.categories.retrieve(router.query.id).then((category) => setCategory(category.name));
     return (
         <>
             <>
                 <Main>
                     <Box>
                         <Center>
-                            <Box py={10} width={"55%"}>
+                            <Box my={10} pt={10} width={"55%"}>
                                 <Heading>
-                                    Все товары <Badge rounded="full" px="4" fontSize="0.8em" bg={"black"} color={"white"}>
-                                    {products.length}
+                                    Все товары по категории "{category}"<Badge rounded="full" px="4" fontSize="0.8em" bg={"black"} color={"white"}>
+                                    {data?.length}
                                 </Badge>
                                 </Heading>
                             </Box>
@@ -24,7 +27,7 @@ const Index = ({products }) => {
                         <Center>
                             <SimpleGrid columns={[1, null, 3]} spacingX='40px'>
                                 {
-                                    products.map(product=>(
+                                    data?.map(product=>(
                                         <Box>
                                             <Center>
                                                 <Cart data={product}/>
@@ -41,14 +44,16 @@ const Index = ({products }) => {
     )
 }
 
-export async function getServerSideProps() {
-    const { data: products } = await client.products.list();
+export async function getServerSideProps(resolvedUrl) {
+    const {data} = await client.products.list({
+        category_id:[resolvedUrl.query.id]
+    });
 
     return {
         props: {
-            products,
-        },
+            data
+        }
     };
 }
 
-export default Index
+export default GoodsByCategory
