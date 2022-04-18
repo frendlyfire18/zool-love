@@ -44,11 +44,11 @@ const NavLink = ({ children,href }: { children: ReactNode,href:string }) => (
 const CartItem=({item,refreshCart})=>{
     return(
         <Box>
-            <MenuItem sx={{
+            <Box p={5} sx={{
                 '@media screen and (max-width: 540px) ':{
                     width:"200px"
                 }
-            }} closeOnSelect={false} width={"800px"}>
+            }} width={"800px"}>
                 <SimpleGrid columns={[1,null,4]}>
                     <Image
                         rounded={'lg'}
@@ -79,7 +79,7 @@ const CartItem=({item,refreshCart})=>{
                         <FiTrash2/>
                     </Button>
                 </SimpleGrid>
-            </MenuItem>
+            </Box>
             <MenuDivider />
         </Box>
     )
@@ -104,26 +104,25 @@ const Cart =()=>{
                     client.cart.retrieve().then((cart) => refreshCart(cart));
                 }}>
                     <Flex>
-                        <Box sx={{
-                            '@media screen and (max-width: 540px) ':{
-                                display:"none"
-                            }
-                        }}>
+                        <Box display={{ base: 'none', md: 'flex' }}>
                             <FiShoppingCart/>
                         </Box>
-
-                        <Badge mx={2} color={'black'} fontSize={'sm'} textTransform={'uppercase'}>
+                        <Text sx={{
+                            '@media screen and (max-width: 540px) ':{
+                                padding:0
+                            }
+                        }} px={2} color={'black'} fontSize={'sm'} textTransform={'uppercase'}>
                             {cart.line_items?.length||0}
-                        </Badge>
+                        </Text>
                     </Flex>
                 </MenuButton>
                 <MenuList color={"black"} zIndex={10}>
                     {
-                        cart.line_items?.length === 0
+                        !cart?.line_items?.length
                         &&
-                            <Text px={5}>
-                                Корзина пуста
-                            </Text>
+                        <Text px={5}>
+                            Корзина пуста
+                        </Text>
                     }
                     {
                         cart.line_items?.map(item=>(
