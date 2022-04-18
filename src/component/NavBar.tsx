@@ -179,28 +179,26 @@ export default function Nav() {
                     </HStack>
                 </Flex>
                 {isOpen ? (
-                    <Center>
-                        <Box  p={4} display={{ md: 'none' }}>
-                            <Flex as={'nav'}>
-                                <NavLink href={"/"}>Каталог</NavLink>
-                                <NavLink href={"/categories"}>Категории</NavLink>
-                                <NavLink href={"/about"}>О нас</NavLink>
-                                <Flex alignItems={'center'}>
-                                    <SimpleGrid columns={[2,null,2]} spacingX={"20px"}>
-                                        <Button sx={{
-                                            '@media screen and (max-width: 540px) ':{
-                                                width:"25px",
-                                                height:"25px"
-                                            }
-                                        }} onClick={toggleColorMode} color={colorMode === 'light' ?"black":"white"}>
-                                            {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-                                        </Button>
-                                        <Cart/>
-                                    </SimpleGrid>
-                                </Flex>
+                    <Box  p={4} display={{ md: 'none' }}>
+                        <Stack as={'nav'} spacing={4}>
+                            <NavLink href={"/"}>Каталог</NavLink>
+                            <NavLink href={"/categories"}>Категории</NavLink>
+                            <NavLink href={"/about"}>О нас</NavLink>
+                            <Flex alignItems={'center'}>
+                                <SimpleGrid columns={[2,null,2]} spacingX={"20px"}>
+                                    <Button sx={{
+                                        '@media screen and (max-width: 540px) ':{
+                                            width:"25px",
+                                            height:"25px"
+                                        }
+                                    }} onClick={toggleColorMode} color={colorMode === 'light' ?"black":"white"}>
+                                        {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+                                    </Button>
+                                    <Cart/>
+                                </SimpleGrid>
                             </Flex>
-                        </Box>
-                    </Center>
+                        </Stack>
+                    </Box>
                 ) : null}
             </Box>
         </>
