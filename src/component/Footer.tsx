@@ -40,11 +40,7 @@ export default function Footer() {
         <Box
             bg={"black"}
             color={"white"}
-            sx={{
-                '@media screen and (max-width: 540px) ':{
-                    fontSize:"10px"
-                }
-            }} >
+            >
             <Container as={Stack} maxW={'6xl'} py={10}>
                 <Center>
                     <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={8}>

@@ -18,8 +18,12 @@ import {
     useColorMode,
     Center, SimpleGrid, Badge,
 } from '@chakra-ui/react';
+import {
+    IconButton,HStack
+} from "@chakra-ui/react"
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import {FiShoppingCart,FiTrash2} from "react-icons/fi";
+import {HamburgerIcon,CloseIcon} from "@chakra-ui/icons"
 
 import client from "../lib/Commerce";
 
@@ -139,38 +143,64 @@ export default function Nav() {
         <>
             <Box
                  w="full" bg={"black"} px={4} color={"white"}>
-                <Flex sx={{
-                    '@media screen and (max-width: 540px) ':{
-                        fontSize:"10px"
-                    }
-                }} h={16} alignItems={'center'} justifyContent={'space-between'}>
-                    <Flex><Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">ZOO-LOVE</Text><Image sx={{
-                        '@media screen and (max-width: 540px) ':{
-                            width:"15px",
-                            height:"15px"
-                        }
-                    }} width={"30px"} height={"30px"} src={
+                <Flex py={5} alignItems={'center'} justifyContent={'space-around'}>
+                    <Flex><Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">ZOO-LOVE</Text><Image width={"30px"} height={"30px"} src={
                         "/heart.png"
                     }/></Flex>
-                    <Center>
+                    <IconButton
+                        bg={"white"}
+                        color={"black"}
+                        size={'md'}
+                        icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+                        aria-label={'Open Menu'}
+                        display={{ md: 'none' }}
+                        onClick={isOpen ? onClose : onOpen}
+                    />
+                    <HStack
+                    as={'nav'}
+                    spacing={4}
+                    display={{ base: 'none', md: 'flex' }}>
                         <NavLink href={"/"}>Каталог</NavLink>
                         <NavLink href={"/categories"}>Категории</NavLink>
                         <NavLink href={"/about"}>О нас</NavLink>
-                    </Center>
-
-                    <Flex alignItems={'center'}>
-                        <SimpleGrid columns={[1,null,2]} spacingX={"20px"}>
-                            <Button sx={{
-                                '@media screen and (max-width: 540px) ':{
-                                    width:"25px",
-                                    height:"25px"
-                                }
-                            }} onClick={toggleColorMode} color={colorMode === 'light' ?"black":"white"}>
-                                {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-                            </Button>
-                            <Cart/>
-                        </SimpleGrid>
-                    </Flex>
+                        <Flex alignItems={'center'}>
+                            <SimpleGrid columns={[1,null,2]} spacingX={"20px"}>
+                                <Button sx={{
+                                    '@media screen and (max-width: 540px) ':{
+                                        width:"25px",
+                                        height:"25px"
+                                    }
+                                }} onClick={toggleColorMode} color={colorMode === 'light' ?"black":"white"}>
+                                    {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+                                </Button>
+                                <Cart/>
+                            </SimpleGrid>
+                        </Flex>
+                    </HStack>
+                    {isOpen ? (
+                        <Center>
+                            <Box  p={4} display={{ md: 'none' }}>
+                                <Stack as={'nav'} spacing={4}>
+                                    <NavLink href={"/"}>Каталог</NavLink>
+                                    <NavLink href={"/categories"}>Категории</NavLink>
+                                    <NavLink href={"/about"}>О нас</NavLink>
+                                    <Flex alignItems={'center'}>
+                                        <SimpleGrid columns={[2,null,2]} spacingX={"20px"}>
+                                            <Button sx={{
+                                                '@media screen and (max-width: 540px) ':{
+                                                    width:"25px",
+                                                    height:"25px"
+                                                }
+                                            }} onClick={toggleColorMode} color={colorMode === 'light' ?"black":"white"}>
+                                                {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+                                            </Button>
+                                            <Cart/>
+                                        </SimpleGrid>
+                                    </Flex>
+                                </Stack>
+                            </Box>
+                        </Center>
+                    ) : null}
                 </Flex>
             </Box>
         </>
