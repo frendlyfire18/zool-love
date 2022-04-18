@@ -181,7 +181,7 @@ export default function Nav() {
                 {isOpen ? (
                     <Center>
                         <Box  p={4} display={{ md: 'none' }}>
-                            <Flex as={'nav'} spacing={4}>
+                            <Flex as={'nav'}>
                                 <NavLink href={"/"}>Каталог</NavLink>
                                 <NavLink href={"/categories"}>Категории</NavLink>
                                 <NavLink href={"/about"}>О нас</NavLink>
