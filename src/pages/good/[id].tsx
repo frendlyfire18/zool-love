@@ -38,7 +38,7 @@ const Good=()=>{
     })
     const dispatch = useAppDispatch()
     useEffect(() => {
-        setVariables({_id:router.query.id})
+        setVariables({_id:router.query.id as string})
     },[router.query.id])
 
     if(fetching||!data){

@@ -26,6 +26,7 @@ export const cartSlice = createSlice({
                     (newArr[value] as any) = good
                 }
             })
+            // @ts-ignore
             state.goods = newArr
         },
         decrement:(state, action)=>{
@@ -38,6 +39,7 @@ export const cartSlice = createSlice({
                         (newArr[value] as any) = good
                 }
             })
+            // @ts-ignore
             state.goods = newArr
         },
         addToCart: (state, action) => {
@@ -52,6 +54,7 @@ export const cartSlice = createSlice({
                 newArr[value] = good
             })
             if(isInArray){
+                // @ts-ignore
                 state.goods = newArr
             }else{
                 state.goods.push((action.payload as never));
@@ -64,6 +67,7 @@ export const cartSlice = createSlice({
                     (newArr[value] as any) = good
                 }
             })
+            // @ts-ignore
             state.goods = newArr
         },
     },
