@@ -1,4 +1,4 @@
-import { FiShoppingCart } from 'react-icons/fi';
+import { FiTrash } from 'react-icons/fi';
 import NextLink from "next/link"
 import {
     Box,
@@ -9,13 +9,8 @@ import {
     Image, Badge, Button,  Icon, SimpleGrid,Link
 } from '@chakra-ui/react';
 import React from "react";
-import {
-    addToCart,
-} from '../redux/feature/counter/counterSlice';
-import {useAppDispatch} from "../redux/hooks";
 
-function Card({data}) {
-    const dispatch = useAppDispatch()
+function AdminCard({data}) {
     return (
         <Center py={12}>
             <Box
@@ -26,7 +21,7 @@ function Card({data}) {
                 boxShadow={'2xl'}
                 rounded={'lg'}
                 pos={'relative'}
-                zIndex={0}>
+                zIndex={1}>
                 <Box
                     rounded={'lg'}
                     mt={-12}
@@ -40,7 +35,7 @@ function Card({data}) {
                         pos: 'absolute',
                         top: 5,
                         left: 0,
-                        backgroundImage: `url(${data.image})`,
+                        backgroundImage: `url(${data.image?.url})`,
                         filter: 'blur(15px)',
                         zIndex: -1,
                     }}
@@ -70,7 +65,7 @@ function Card({data}) {
                 <SimpleGrid columns={[1,null,4]} >
                     <Text fontSize={"lg"} py={5}>
                         <Flex>
-                            {data.price}₽
+                            {data.price}
                             <Badge rounded="full" mx={2} px="2" fontSize="0.8em" bg={"black"} color={"white"}>
                                 Кол-во:{data?.value}
                             </Badge>
@@ -82,10 +77,8 @@ function Card({data}) {
                     <Box>
 
                     </Box>
-                    <Button onClick={()=>{
-                        dispatch(addToCart({id:data._id,num:1}))
-                    }}>
-                        <Icon as={FiShoppingCart} h={7} w={7} alignSelf={'center'} />
+                    <Button>
+                        <Icon as={FiTrash} h={7} w={7} alignSelf={'center'} />
                     </Button>
                 </SimpleGrid>
             </Box>
@@ -93,4 +86,4 @@ function Card({data}) {
     );
 }
 
-export default Card;
+export default AdminCard;

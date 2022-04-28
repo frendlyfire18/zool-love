@@ -16,7 +16,7 @@ import {
     useDisclosure,
     useColorModeValue,
     useColorMode,
-    Center, SimpleGrid, Badge,
+    Center, SimpleGrid, Badge, Icon,
 } from '@chakra-ui/react';
 import {
     IconButton,HStack
@@ -26,8 +26,17 @@ import {FiShoppingCart,FiTrash2} from "react-icons/fi";
 import {HamburgerIcon,CloseIcon} from "@chakra-ui/icons"
 
 import client from "../lib/Commerce";
+import {selectCart} from "../redux/feature/counter/counterSlice";
+import {useAppDispatch, useAppSelector} from "../redux/hooks";
+import {useGetOneProductQuery} from "../generated/graphql";
 
-const NavLink = ({ children,href }: { children: ReactNode,href:string }) => (
+import {
+    deleteFromCart,
+    increment,
+    decrement
+} from '../redux/feature/counter/counterSlice';
+
+const NavLink = ({ children,color,href }: { children: ReactNode,color:string,href:string }) => (
     <Link
         px={2}
         py={1}
@@ -35,13 +44,25 @@ const NavLink = ({ children,href }: { children: ReactNode,href:string }) => (
         _hover={{
             textDecoration: 'none',
             bg: useColorModeValue('gray.200', 'gray.700'),
-            color:"black"
+            color:`${color}`
         }}
         href={href}>
         {children}
     </Link>
 );
-const CartItem=({item,refreshCart})=>{
+const CartItem=({item,color})=>{
+    const dispatch = useAppDispatch();
+    const [variables,setV] = useState({_id: item.id})
+    const [{data,fetching}] = useGetOneProductQuery({
+        variables,
+    })
+    if(!data||fetching){
+        return (
+            <>
+               Загрузка
+            </>
+        )
+    }
     return(
         <Box>
             <Box p={5} sx={{
@@ -56,25 +77,24 @@ const CartItem=({item,refreshCart})=>{
                         width={"50%"}
                         mx={5}
                         objectFit={'cover'}
-                        src={item.image?.url}
+                        src={data.getOneProduct.image}
                     />
                     <SimpleGrid columns={[1,null,3]} mr={5}>
                         <Button onClick={()=>{
-                            client.cart.update(item.id, { quantity:(item.quantity+1)});
+                            dispatch(increment({id:item.id}))
                         }} p={2} colorScheme={"green"}>+</Button>
-                        <Box mx={5} p={2}>
-                            {item.quantity}
+                        <Box width={"50px"} color={color} mx={5} p={2}>
+                            {item.num}
                         </Box>
                         <Button onClick={()=>{
-                            client.cart.update(item.id, { quantity:(item.quantity-1)});
+                            dispatch(decrement({id:item.id}))
                         }} p={2} colorScheme={"red"}>-</Button>
                     </SimpleGrid>
-                    <Box >
-                        {item.name.slice(item.name.indexOf("/",5)+1,item.name.length)}
+                    <Box color={color}>
+                        {data.getOneProduct.name}
                     </Box>
                     <Button mr={5} colorScheme={"red"} ml={5} onClick={()=>{
-                        client.cart.remove(item.id);
-                        client.cart.retrieve().then((cart) => refreshCart(cart));
+                        dispatch(deleteFromCart({id:item.id,num:1}))
                     }}>
                         <FiTrash2/>
                     </Button>
@@ -85,48 +105,32 @@ const CartItem=({item,refreshCart})=>{
     )
 }
 
-const Cart =()=>{
-    const [cart,refreshCart] = useState(client.cart.retrieve())
-    client.cart.retrieve().then((cart) => refreshCart(cart));
+const Cart =({color})=>{
+    const cart = useAppSelector(selectCart);
     return(
         <>
             <Menu>
-                <MenuButton
-                    color={"black"}
-                    as={Button}
-                    sx={{
-                        '@media screen and (max-width: 540px) ':{
-                            width:"25px",
-                            height:"25px"
-                        }
-                    }}
-                onClick={()=>{
-                    client.cart.retrieve().then((cart) => refreshCart(cart));
-                }}>
+                <MenuButton>
                     <Flex>
-                        <Box display={{ base: 'none', md: 'flex' }}>
-                            <FiShoppingCart/>
-                        </Box>
-                        <Text sx={{
-                            '@media screen and (max-width: 540px) ':{
-                                padding:0
-                            }
-                        }} px={2} color={'black'} fontSize={'sm'} textTransform={'uppercase'}>
-                            {cart.line_items?.length||0}
-                        </Text>
+                        <Icon as={FiShoppingCart} h={7} w={7} alignSelf={'center'} />
+                        <Center px={1}>
+                            {cart?.length||0}
+                        </Center>
                     </Flex>
                 </MenuButton>
-                <MenuList color={"black"} zIndex={10}>
+                <MenuList zIndex={10}>
                     {
-                        !cart?.line_items?.length
+                        !cart?.length
                         &&
-                        <Text px={5}>
+                        <Text color={color} px={5}>
                             Корзина пуста
                         </Text>
                     }
                     {
-                        cart.line_items?.map(item=>(
-                            <CartItem item={item} refreshCart={refreshCart}/>
+                        cart?.length!==0
+                        &&
+                        cart?.map(item=>(
+                            <CartItem color={color} item={item}/>
                         ))
                     }
                 </MenuList>
@@ -159,11 +163,13 @@ export default function Nav() {
                     as={'nav'}
                     spacing={4}
                     display={{ base: 'none', md: 'flex' }}>
-                        <NavLink href={"/"}>Каталог</NavLink>
-                        <NavLink href={"/categories"}>Категории</NavLink>
-                        <NavLink href={"/about"}>О нас</NavLink>
+                        <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/"}>Каталог</NavLink>
+                        <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/categories"}>Категории</NavLink>
+                        <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/about"}>О нас</NavLink>
+                        <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/admin"}>Админ панель</NavLink>
                         <Flex alignItems={'center'}>
                             <SimpleGrid columns={[1,null,2]} spacingX={"20px"}>
+                                <Cart color={colorMode === 'light' ? "black" : "white"}/>
                                 <Button sx={{
                                     '@media screen and (max-width: 540px) ':{
                                         width:"25px",
@@ -172,17 +178,17 @@ export default function Nav() {
                                 }} onClick={toggleColorMode} color={colorMode === 'light' ?"black":"white"}>
                                     {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
                                 </Button>
-                                <Cart/>
                             </SimpleGrid>
                         </Flex>
                     </HStack>
                 </Flex>
                 {isOpen ? (
-                    <Box  p={4} display={{ md: 'none' }}>
+                    <Box pl={10} display={{ md: 'none' }}>
                         <Stack as={'nav'} spacing={4}>
-                            <NavLink href={"/"}>Каталог</NavLink>
-                            <NavLink href={"/categories"}>Категории</NavLink>
-                            <NavLink href={"/about"}>О нас</NavLink>
+                            <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/"}>Каталог</NavLink>
+                            <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/categories"}>Категории</NavLink>
+                            <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/about"}>О нас</NavLink>
+                            <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/admin"}>Админ панель</NavLink>
                             <Flex alignItems={'center'}>
                                 <SimpleGrid columns={[2,null,2]} spacingX={"20px"}>
                                     <Button sx={{
@@ -193,7 +199,7 @@ export default function Nav() {
                                     }} onClick={toggleColorMode} color={colorMode === 'light' ?"black":"white"}>
                                         {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
                                     </Button>
-                                    <Cart/>
+                                    <Cart color={colorMode === 'light' ? "black" : "white"}/>
                                 </SimpleGrid>
                             </Flex>
                         </Stack>

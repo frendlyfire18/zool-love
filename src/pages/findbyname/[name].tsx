@@ -1,24 +1,42 @@
-import React, {useEffect, useState} from "react"
+import React, {useEffect, useState} from 'react';
+import {
+    SimpleGrid,
+    Box,
+    Center,
+    Heading,
+    Badge,
+    Button,
+    Radio,
+    RadioGroup,
+    Spinner,
+    MenuDivider,
+    MenuList,
+    Stack,
+    MenuItemOption, MenuButton, Menu, MenuOptionGroup
+} from "@chakra-ui/react"
 import Main from "../../layouts/Main";
-import Cart from "../../component/Card"
-import {SimpleGrid, Box, Heading, Center, Badge} from '@chakra-ui/react'
-import {useRouter} from "next/router";
-import {useGetProductsByCategoryQuery} from "../../generated/graphql";
+import {
+    useGetAllByNameQuery,
+    useGetAllCollisionQuery
+} from "../../generated/graphql";
 import {withUrqlClient} from "next-urql";
 import {CreateURQLClient} from "../../utils/CreateURQLClient";
-import Head from "next/head";
-import LoadingCard from "../../component/LoadingCard";
+import Head from "next/head"
 import Card from "../../component/Card";
+import LoadingCard from "../../component/LoadingCard";
+import {useRouter} from "next/router";
 
-const GoodsByCategory = () => {
-    const router=useRouter();
-    const [variables,setV] = useState({categoryId:router.query.id as string})
-    const [{data,fetching}] = useGetProductsByCategoryQuery({
-        variables,
-    })
+const FindByName =(props)=> {
+    const router = useRouter();
+    const [variables,setV] = useState({name:router.query.name as string})
+    const [{data,fetching}] = useGetAllByNameQuery(
+        {
+            variables,
+        }
+    )
     useEffect(() => {
-        setV({categoryId:router.query.id as string})
-    },[router.query.id])
+        setV({name:router.query.name as string})
+    },[router.query.name])
     if(fetching||!data){
         return(
             <div>
@@ -51,15 +69,15 @@ const GoodsByCategory = () => {
     return (
         <div>
             <Head>
-                <title>Товары по категории "{data?.getProductsByCategory.records[0]?.category}"</title>
+                <title>Добро пожаловать на сайт зоо-магазина Zoo Love</title>
             </Head>
             <Main>
                 <Box>
                     <Center>
                         <Box py={10} width={"55%"}>
                             <Heading>
-                                Все товары по категории "{data?.getProductsByCategory.records[0]?.category}"<Badge rounded="full" px="4" fontSize="0.8em" bg={"black"} color={"white"}>
-                                {data?.getProductsByCategory.records.length}
+                                Все товары <Badge rounded="full" px="4" fontSize="0.8em" bg={"black"} color={"white"}>
+                                {data?.getByName.records.length}
                             </Badge>
                             </Heading>
                         </Box>
@@ -67,7 +85,7 @@ const GoodsByCategory = () => {
                     <Center>
                         <SimpleGrid columns={[1, null, 3]} spacingX='40px'>
                             {
-                                data?.getProductsByCategory.records.map((product,value)=>(
+                                data?.getByName.records.map((product,value)=>(
                                     <Box key={value}>
                                         <Card key={value} data={product}/>
                                     </Box>
@@ -81,5 +99,4 @@ const GoodsByCategory = () => {
     );
 }
 
-
-export default withUrqlClient(CreateURQLClient,{ssr:false})(GoodsByCategory);
+export default withUrqlClient(CreateURQLClient,{ssr:false})(FindByName);

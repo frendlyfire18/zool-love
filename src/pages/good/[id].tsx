@@ -14,18 +14,56 @@ import {
     useColorModeValue,
     VisuallyHidden,
     List,
-    ListItem,
+    ListItem, Center, Spinner, Badge,
 } from '@chakra-ui/react';
-import { FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
 import { MdLocalShipping } from 'react-icons/md';
 import Main from "../../layouts/Main";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import client from "../../lib/Commerce";
+import {withUrqlClient} from "next-urql";
+import {CreateURQLClient} from "../../utils/CreateURQLClient";
+import {useGetOneProductQuery} from "../../generated/graphql";
+import Head from "next/head";
+import {
+    addToCart,
+} from '../../redux/feature/counter/counterSlice';
+import {useAppDispatch} from "../../redux/hooks";
 
-const Good=({product})=>{
+const Good=()=>{
+    const router = useRouter();
+    const [variables,setVariables] = useState({_id:router.query.id as string})
+    const [{data,fetching}] = useGetOneProductQuery({
+        variables
+    })
+    const dispatch = useAppDispatch()
+    useEffect(() => {
+        setVariables({_id:router.query.id})
+    },[router.query.id])
+
+    if(fetching||!data){
+        return(
+            <div>
+                <Main>
+                    <Center py="150px">
+                        <Spinner
+                            thickness='4px'
+                            speed='0.65s'
+                            emptyColor='gray.200'
+                            color='blue.500'
+                            size='xl'
+                        />
+                    </Center>
+                </Main>
+            </div>
+        )
+    }
+
     return (
         <Main>
+            <Head>
+                <title>{data.getOneProduct.name}</title>
+            </Head>
             <Container maxW={'7xl'}>
                 <SimpleGrid
                     columns={{ base: 1, lg: 2 }}
@@ -36,7 +74,7 @@ const Good=({product})=>{
                             rounded={'md'}
                             alt={'product image'}
                             src={
-                                product[0].image.url
+                                data.getOneProduct.image
                             }
                             fit={'cover'}
                             align={'center'}
@@ -50,13 +88,13 @@ const Good=({product})=>{
                                 lineHeight={1.1}
                                 fontWeight={600}
                                 fontSize={{ base: '2xl', sm: '4xl', lg: '5xl' }}>
-                                {product[0].name}
+                                {data.getOneProduct.name}
                             </Heading>
                             <Text
                                 color={useColorModeValue('gray.900', 'gray.400')}
                                 fontWeight={300}
                                 fontSize={'2xl'}>
-                                {product[0].price.formatted_with_symbol}
+                                {data.getOneProduct.price}₽
                             </Text>
                         </Box>
 
@@ -69,40 +107,46 @@ const Good=({product})=>{
                                 />
                             }>
                             <VStack spacing={{ base: 4, sm: 6 }}>
+                                <Text color={useColorModeValue('gray.600', 'gray.400')}
+                                      fontSize={'2xl'}
+                                      fontWeight={'300'}>
+                                    Описание
+                                </Text>
                                 <Text color={useColorModeValue('gray.500', 'gray.400')}
                                       fontSize={'2xl'}
                                       fontWeight={'300'}>
-                                    <div dangerouslySetInnerHTML={{ __html: product[0].description.slice(0,product[0].description.indexOf(".",1)) }} />
-                                </Text>
-                                <Text fontSize={'lg'}>
-                                    <div dangerouslySetInnerHTML={{ __html: product[0].description.slice(product[0].description.indexOf(".",1)+1,product[0].description.indexOf("Общие характеристики",1)) }} />
+                                    <div dangerouslySetInnerHTML={{ __html: data.getOneProduct.description }} />
                                 </Text>
                             </VStack>
                             <Box>
-                                {
-                                    product[0].variant_groups.map(group=>(
-                                        <>
-                                            <Text
-                                                fontSize={{ base: '16px', lg: '18px' }}
-                                                color={useColorModeValue('yellow.500', 'yellow.300')}
-                                                fontWeight={'500'}
-                                                textTransform={'uppercase'}
-                                                py={'4'}>
-                                                <div dangerouslySetInnerHTML={{ __html: group.name}}/>
-                                            </Text>
-
-                                            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10}>
-                                                {
-                                                    group.options.map(option=>(
-                                                        <List spacing={2}>
-                                                            <ListItem><div dangerouslySetInnerHTML={{ __html: option.name}}/></ListItem>
-                                                        </List>
-                                                    ))
-                                                }
-                                            </SimpleGrid>
-                                        </>
-                                    ))
-                                }
+                                <Text
+                                    fontSize={{ base: '16px', lg: '18px' }}
+                                    color={useColorModeValue('yellow.500', 'yellow.300')}
+                                    fontWeight={'500'}
+                                    textTransform={'uppercase'}
+                                    py={'4'}>
+                                    Характеристики
+                                </Text>
+                                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2}>
+                                    <Box><Badge mr={2} variant='solid' colorScheme='yellow'>
+                                        Вес
+                                    </Badge>{data.getOneProduct.weight}</Box>
+                                    <Box><Badge mr={2} variant='solid' colorScheme='yellow'>
+                                        Для кого
+                                    </Badge>{data.getOneProduct.forWho}</Box>
+                                    <Box><Badge mr={2} variant='solid' colorScheme='yellow'>
+                                        Для чего
+                                    </Badge>{data.getOneProduct.purpose}</Box>
+                                    <Box><Badge mr={2} variant='solid' colorScheme='yellow'>
+                                        Срок годности
+                                    </Badge>{data.getOneProduct.dateOfEnd}</Box>
+                                    <Box><Badge mr={2} variant='solid' colorScheme='yellow'>
+                                        Страна производитель
+                                    </Badge>{data.getOneProduct.madeCountry}</Box>
+                                    <Box><Badge mr={2} variant='solid' colorScheme='yellow'>
+                                        Количество
+                                    </Badge>{data.getOneProduct.value}</Box>
+                                </SimpleGrid>
                             </Box>
                         </Stack>
 
@@ -120,10 +164,10 @@ const Good=({product})=>{
                                 boxShadow: 'lg',
                             }}
                             onClick={()=>{
-                                client.cart.add(product[0].id, 1).then((response) => console.log(response));
+                                dispatch(addToCart({id:data.getOneProduct._id,num:1}))
                             }}
                         >
-                            Add to cart
+                            Добавить в корзину
                         </Button>
 
                         <Stack direction="row" alignItems="center" justifyContent={'center'}>
@@ -137,11 +181,4 @@ const Good=({product})=>{
     );
 }
 
-export async function getServerSideProps(resolvedUrl) {
-    const {data:product,fetching} = await client.products.list({
-        query : resolvedUrl.query.id
-    });
-    return { props: { product } }
-}
-
-export default Good;
+export default withUrqlClient(CreateURQLClient,{ssr:false})(Good);

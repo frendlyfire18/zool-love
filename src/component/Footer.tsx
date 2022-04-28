@@ -45,10 +45,10 @@ export default function Footer() {
                 <Center>
                     <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={8}>
                         <Stack align={'flex-start'}>
-                            <ListHeader>Product</ListHeader>
-                            <Link href={'#'}>Overview</Link>
+                            <ListHeader>Продукт</ListHeader>
+                            <Link href={'#'}>Обзор</Link>
                             <Stack direction={'row'} align={'center'} spacing={2}>
-                                <Link href={'#'}>Features</Link>
+                                <Link href={'#'}>Особенности</Link>
                                 <Tag
                                     size={'sm'}
                                     bg={useColorModeValue('green.300', 'green.800')}
@@ -59,17 +59,17 @@ export default function Footer() {
                             </Stack>
                         </Stack>
                         <Stack align={'flex-start'}>
-                            <ListHeader>Company</ListHeader>
-                            <Link href={'#'}>About Us</Link>
-                            <Link href={'#'}>Press</Link>
+                            <ListHeader>Компания</ListHeader>
+                            <Link href={'#'}>О Нас</Link>
+                            <Link href={'#'}>Пресса</Link>
                         </Stack>
                         <Stack align={'flex-start'}>
-                            <ListHeader>Legal</ListHeader>
-                            <Link href={'#'}>Cookies Policy</Link>
-                            <Link href={'#'}>Privacy Policy</Link>
+                            <ListHeader>Права</ListHeader>
+                            <Link href={'#'}>Кукки политика</Link>
+                            <Link href={'#'}>Правила конфедециальности</Link>
                         </Stack>
                         <Stack align={'flex-start'}>
-                            <ListHeader>Follow Us</ListHeader>
+                            <ListHeader>Подпишитесь на нас</ListHeader>
                             <Link href={'#'}>Facebook</Link>
                             <Link href={'#'}>Twitter</Link>
                         </Stack>
@@ -96,7 +96,7 @@ export default function Footer() {
                     <Logo />
                 </Flex>
                 <Text  pt={6} fontSize={'sm'} textAlign={'center'}>
-                    © 2022 ZOO-LOVE. All rights reserved
+                    © 2022 ZOO-LOVE. Все права защищены
                 </Text>
             </Box>
         </Box>
