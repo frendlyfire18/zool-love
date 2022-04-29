@@ -147,7 +147,7 @@ export const CreateURQLClient = (ssrExchange:any,ctx:any)=>{
         cookie = ctx?.req?.headers?.cookie;
     }
     return {
-        url: 'http://localhost:4000/graphql',//url of graphql server
+        url: 'https://zoo-love-server.herokuapp.com/graphql',//url of graphql server
         fetchOptions:{
             credentials:"include" as const,//mode need for sending and working cookie
             headers:cookie?{
