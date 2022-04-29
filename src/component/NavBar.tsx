@@ -236,7 +236,7 @@ export default function Nav() {
                             <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/about"}>О нас</NavLink>
                             <Flex alignItems={'center'}>
                                 <SimpleGrid columns={[2,null,2]} spacingX={"20px"}>
-                                    <Button p={4} _hover={{
+                                    <Button py={2} _hover={{
                                         background:"hsl(317 100% 54%)",
                                         color:"black",
                                         textShadow:"none",
