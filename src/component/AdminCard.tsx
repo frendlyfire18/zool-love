@@ -9,8 +9,11 @@ import {
     Image, Badge, Button,  Icon, SimpleGrid,Link
 } from '@chakra-ui/react';
 import React from "react";
+import {useDeleteProductMutation} from "../generated/graphql";
+import {useRouter} from "next/router";
 
 function AdminCard({data}) {
+    const [,deleteProduct] = useDeleteProductMutation()
     return (
         <Center py={12}>
             <Box
@@ -77,7 +80,11 @@ function AdminCard({data}) {
                     <Box>
 
                     </Box>
-                    <Button>
+                    <Button
+                        onClick={async ()=>{
+                            await deleteProduct({_id:data._id})
+                        }}
+                    >
                         <Icon as={FiTrash} h={7} w={7} alignSelf={'center'} />
                     </Button>
                 </SimpleGrid>

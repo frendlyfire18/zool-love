@@ -7,6 +7,7 @@ import {withUrqlClient} from "next-urql";
 import {CreateURQLClient} from "../../utils/CreateURQLClient";
 import {useRouter} from "next/router";
 import AdminCard from "../../component/AdminCard";
+import Head from "next/head";
 
 function AdminPanel(props) {
     const router = useRouter()
@@ -30,6 +31,9 @@ function AdminPanel(props) {
     }
     return (
         <div>
+            <Head>
+                <title>Админ панель</title>
+            </Head>
             <Main>
                 <Box>
                     <Center>

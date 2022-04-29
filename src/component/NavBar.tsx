@@ -35,21 +35,27 @@ import {
     increment,
     decrement
 } from '../redux/feature/counter/counterSlice';
+import {useRouter} from "next/router";
 
-const NavLink = ({ children,color,href }: { children: ReactNode,color:string,href:string }) => (
-    <Link
-        px={2}
-        py={1}
-        rounded={'md'}
-        _hover={{
-            textDecoration: 'none',
-            bg: useColorModeValue('gray.200', 'gray.700'),
-            color:`${color}`
-        }}
-        href={href}>
-        {children}
-    </Link>
-);
+const NavLink = ({ children,color,href }: { children: ReactNode,color:string,href:string }) => {
+    const router = useRouter()
+    return(
+        <Link
+            onClick={()=>{
+                router.push(href)
+            }}
+            px={2}
+            py={1}
+            rounded={'md'}
+            _hover={{
+                textDecoration: 'none',
+                bg: useColorModeValue('gray.200', 'gray.700'),
+                color:`${color}`
+            }}>
+            {children}
+        </Link>
+    )
+}
 const CartItem=({item,color})=>{
     const dispatch = useAppDispatch();
     const [variables,setV] = useState({_id: item.id})
@@ -110,7 +116,17 @@ const Cart =({color})=>{
     return(
         <>
             <Menu>
-                <MenuButton>
+                <MenuButton p={1} borderRadius="lg" _hover={{
+                    background:"hsl(317 100% 54%)",
+                    color:"black",
+                    textShadow:"none",
+                }} sx={{
+                    background:"hsl(323 21% 16%)",
+                    color:"hsl(317 100% 54%)",
+                    border:"hsl(317 100% 54%) 0.125em solid",
+                    textShadow:"0 0 0.125em hsl(0 0% 100% / 0.3), 0 0 0.45em",
+                    boxShadow:"inset 0 0 0.5em 0 hsl(317 100% 54%), 0 0 0.5em 0 hsl(317 100% 54%)",
+                }}>
                     <Flex>
                         <Icon as={FiShoppingCart} h={7} w={7} alignSelf={'center'} />
                         <Center px={1}>
@@ -140,6 +156,7 @@ const Cart =({color})=>{
 }
 
 export default function Nav() {
+    const router = useRouter();
     const { colorMode, toggleColorMode } = useColorMode();
     const { isOpen, onOpen, onClose } = useDisclosure();
     return (
@@ -147,9 +164,18 @@ export default function Nav() {
             <Box
                  w="full" bg={"black"} px={4} color={"white"}>
                 <Flex py={5} alignItems={'center'} justifyContent={'space-around'}>
-                    <Flex><Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">ZOO-LOVE</Text><Image width={"30px"} height={"30px"} src={
-                        "/heart.png"
-                    }/></Flex>
+                    <Box>
+                        <Flex>
+                            <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">ZOO-LOVE</Text>
+                            <Image width={"30px"} height={"30px"} src={"/heart.png"}/>
+                            <Box display={{ base: 'none',md:"flex" }}>
+                                <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/"}>Каталог</NavLink>
+                                <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/categories"}>Категории</NavLink>
+                                <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/about"}>О нас</NavLink>
+                            </Box>
+
+                        </Flex>
+                    </Box>
                     <IconButton
                         bg={"white"}
                         color={"black"}
@@ -163,23 +189,43 @@ export default function Nav() {
                     as={'nav'}
                     spacing={4}
                     display={{ base: 'none', md: 'flex' }}>
-                        <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/"}>Каталог</NavLink>
-                        <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/categories"}>Категории</NavLink>
-                        <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/about"}>О нас</NavLink>
-                        <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/admin"}>Админ панель</NavLink>
                         <Flex alignItems={'center'}>
                             <SimpleGrid columns={[1,null,2]} spacingX={"20px"}>
                                 <Cart color={colorMode === 'light' ? "black" : "white"}/>
-                                <Button sx={{
+                                <Button _hover={{
+                                    background:"hsl(317 100% 54%)",
+                                    color:"black",
+                                    textShadow:"none",
+                                }} sx={{
                                     '@media screen and (max-width: 540px) ':{
                                         width:"25px",
                                         height:"25px"
-                                    }
+                                    },
+                                    background:"hsl(323 21% 16%)",
+                                    color:"hsl(317 100% 54%)",
+                                    border:"hsl(317 100% 54%) 0.125em solid",
+                                    textShadow:"0 0 0.125em hsl(0 0% 100% / 0.3), 0 0 0.45em",
+                                    boxShadow:"inset 0 0 0.5em 0 hsl(317 100% 54%), 0 0 0.5em 0 hsl(317 100% 54%)",
                                 }} onClick={toggleColorMode} color={colorMode === 'light' ?"black":"white"}>
                                     {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
                                 </Button>
                             </SimpleGrid>
                         </Flex>
+                        <Button _hover={{
+                            background:"hsl(317 100% 54%)",
+                            color:"black",
+                            textShadow:"none",
+                        }} sx={{
+                            background:"hsl(323 21% 16%)",
+                            color:"hsl(317 100% 54%)",
+                            border:"hsl(317 100% 54%) 0.125em solid",
+                            textShadow:"0 0 0.125em hsl(0 0% 100% / 0.3), 0 0 0.45em",
+                            boxShadow:"inset 0 0 0.5em 0 hsl(317 100% 54%), 0 0 0.5em 0 hsl(317 100% 54%)",
+                        }} onClick={()=>{
+                            router.push("/enter")
+                        }}>
+                            Вход
+                        </Button>
                     </HStack>
                 </Flex>
                 {isOpen ? (
@@ -188,20 +234,43 @@ export default function Nav() {
                             <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/"}>Каталог</NavLink>
                             <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/categories"}>Категории</NavLink>
                             <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/about"}>О нас</NavLink>
-                            <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/admin"}>Админ панель</NavLink>
                             <Flex alignItems={'center'}>
                                 <SimpleGrid columns={[2,null,2]} spacingX={"20px"}>
-                                    <Button sx={{
+                                    <Button p={2} _hover={{
+                                        background:"hsl(317 100% 54%)",
+                                        color:"black",
+                                        textShadow:"none",
+                                    }} sx={{
                                         '@media screen and (max-width: 540px) ':{
                                             width:"25px",
                                             height:"25px"
-                                        }
+                                        },
+                                        background:"hsl(323 21% 16%)",
+                                        color:"hsl(317 100% 54%)",
+                                        border:"hsl(317 100% 54%) 0.125em solid",
+                                        textShadow:"0 0 0.125em hsl(0 0% 100% / 0.3), 0 0 0.45em",
+                                        boxShadow:"inset 0 0 0.5em 0 hsl(317 100% 54%), 0 0 0.5em 0 hsl(317 100% 54%)",
                                     }} onClick={toggleColorMode} color={colorMode === 'light' ?"black":"white"}>
                                         {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
                                     </Button>
                                     <Cart color={colorMode === 'light' ? "black" : "white"}/>
                                 </SimpleGrid>
                             </Flex>
+                            <Button _hover={{
+                                background:"hsl(317 100% 54%)",
+                                color:"black",
+                                textShadow:"none",
+                            }} sx={{
+                                background:"hsl(323 21% 16%)",
+                                color:"hsl(317 100% 54%)",
+                                border:"hsl(317 100% 54%) 0.125em solid",
+                                textShadow:"0 0 0.125em hsl(0 0% 100% / 0.3), 0 0 0.45em",
+                                boxShadow:"inset 0 0 0.5em 0 hsl(317 100% 54%), 0 0 0.5em 0 hsl(317 100% 54%)",
+                            }} onClick={()=>{
+                                router.push("/enter")
+                            }}>
+                                Вход
+                            </Button>
                         </Stack>
                     </Box>
                 ) : null}

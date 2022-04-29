@@ -1,5 +1,6 @@
 import {dedupExchange, fetchExchange, gql} from "urql";
 import {cacheExchange, Resolver,Cache} from "@urql/exchange-graphcache";
+import {DeleteProductMutationVariables} from "../generated/graphql";
 
 const categoryPagination=():Resolver=> {
     return (_parent, fieldArgs, cache, info) => {
@@ -146,7 +147,7 @@ export const CreateURQLClient = (ssrExchange:any,ctx:any)=>{
         cookie = ctx?.req?.headers?.cookie;
     }
     return {
-        url: 'https://zoo-love-server.herokuapp.com/graphql',//url of graphql server
+        url: 'http://localhost:4000/graphql',//url of graphql server
         fetchOptions:{
             credentials:"include" as const,//mode need for sending and working cookie
             headers:cookie?{
@@ -164,7 +165,24 @@ export const CreateURQLClient = (ssrExchange:any,ctx:any)=>{
                     getProductsByCategory:categoryPagination()
                 },
             },
-            updates: {},
+            updates: {
+                Mutation:{
+                    createProduct:(_result,args,cache,info)=>{
+                        const allFields = cache.inspectFields("Query");
+                        const fieldsInfo = allFields.filter(
+                            (info)=>info.fieldName==="getProducts"
+                        );
+                        fieldsInfo.forEach(
+                            (fi)=>{
+                                cache.invalidate("Query","getProducts",fi.arguments||{})
+                            }
+                        )
+                    },
+                    deleteProduct:(_result,args,cache,info)=>{
+                        cache.invalidate({__typename:"Products",id:(args as DeleteProductMutationVariables)._id} )
+                    },
+                }
+            },
         }),ssrExchange, fetchExchange],
     }
 }

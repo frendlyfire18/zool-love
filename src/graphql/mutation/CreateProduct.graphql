@@ -1,0 +1,39 @@
+mutation CreateProduct(
+  	$name: String!,
+    $description:String!,
+    $price:String!,
+    $sku:String!,
+   	$value:Float!,
+    $image:String!,
+    $madeCountry:String!,
+    $weight:String!,
+    $purpose:String!,
+    $forWho:String!,
+    $dateOfEnd:String!,
+  	$numberOfItemsInBox:Float!,
+    $categoryId:String!
+){
+  createProduct(
+    name:$name,
+    description:$description,
+    price:$price,
+    sku:$sku,
+   	value:$value,
+    image:$image,
+    madeCountry:$madeCountry,
+    weight:$weight,
+    purpose:$purpose,
+    forWho:$forWho,
+    dateOfEnd:$dateOfEnd,
+  	numberOfItemsInBox:$numberOfItemsInBox,
+    categoryId:$categoryId
+  ){
+      _id
+      name
+      price
+      image
+      value
+      forWho
+      madeCountry
+  }
+}

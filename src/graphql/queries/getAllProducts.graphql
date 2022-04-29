@@ -3,6 +3,7 @@ query GetAllProducts($country:String,$forWho:String,$priceRange:Float,$secondRan
     records{
       _id
       name
+      sku
       price
       image
       value

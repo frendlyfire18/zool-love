@@ -141,6 +141,32 @@ export type QueryGetProductsByCategoryArgs = {
   categoryId?: InputMaybe<Scalars['String']>;
 };
 
+export type CreateProductMutationVariables = Exact<{
+  name: Scalars['String'];
+  description: Scalars['String'];
+  price: Scalars['String'];
+  sku: Scalars['String'];
+  value: Scalars['Float'];
+  image: Scalars['String'];
+  madeCountry: Scalars['String'];
+  weight: Scalars['String'];
+  purpose: Scalars['String'];
+  forWho: Scalars['String'];
+  dateOfEnd: Scalars['String'];
+  numberOfItemsInBox: Scalars['Float'];
+  categoryId: Scalars['String'];
+}>;
+
+
+export type CreateProductMutation = { __typename?: 'Mutation', createProduct: { __typename?: 'Products', _id: string, name: string, price: string, image: string, value: number, forWho: string, madeCountry: string } };
+
+export type DeleteProductMutationVariables = Exact<{
+  _id: Scalars['String'];
+}>;
+
+
+export type DeleteProductMutation = { __typename?: 'Mutation', deleteProduct: boolean };
+
 export type UpdateProductsMutationVariables = Exact<{
   country: Scalars['String'];
 }>;
@@ -204,9 +230,49 @@ export type GetAllProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllProductsQuery = { __typename?: 'Query', getProducts: { __typename?: 'ProductResponse', hasMore: boolean, records: Array<{ __typename?: 'Products', _id: string, name: string, price: string, image: string, value: number, forWho: string, madeCountry: string }> } };
+export type GetAllProductsQuery = { __typename?: 'Query', getProducts: { __typename?: 'ProductResponse', hasMore: boolean, records: Array<{ __typename?: 'Products', _id: string, name: string, sku: string, price: string, image: string, value: number, forWho: string, madeCountry: string }> } };
 
 
+export const CreateProductDocument = gql`
+    mutation CreateProduct($name: String!, $description: String!, $price: String!, $sku: String!, $value: Float!, $image: String!, $madeCountry: String!, $weight: String!, $purpose: String!, $forWho: String!, $dateOfEnd: String!, $numberOfItemsInBox: Float!, $categoryId: String!) {
+  createProduct(
+    name: $name
+    description: $description
+    price: $price
+    sku: $sku
+    value: $value
+    image: $image
+    madeCountry: $madeCountry
+    weight: $weight
+    purpose: $purpose
+    forWho: $forWho
+    dateOfEnd: $dateOfEnd
+    numberOfItemsInBox: $numberOfItemsInBox
+    categoryId: $categoryId
+  ) {
+    _id
+    name
+    price
+    image
+    value
+    forWho
+    madeCountry
+  }
+}
+    `;
+
+export function useCreateProductMutation() {
+  return Urql.useMutation<CreateProductMutation, CreateProductMutationVariables>(CreateProductDocument);
+};
+export const DeleteProductDocument = gql`
+    mutation DeleteProduct($_id: String!) {
+  deleteProduct(_id: $_id)
+}
+    `;
+
+export function useDeleteProductMutation() {
+  return Urql.useMutation<DeleteProductMutation, DeleteProductMutationVariables>(DeleteProductDocument);
+};
 export const UpdateProductsDocument = gql`
     mutation UpdateProducts($country: String!) {
   updateProducts(country: $country) {
@@ -361,6 +427,7 @@ export const GetAllProductsDocument = gql`
     records {
       _id
       name
+      sku
       price
       image
       value
