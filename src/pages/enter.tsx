@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Main from "../layouts/Main";
-import {Center, Heading, Box, Button,Link} from "@chakra-ui/react"
+import {Center, Heading, Box, Button,Link,Text} from "@chakra-ui/react"
 import {withUrqlClient} from "next-urql";
 import {CreateURQLClient} from "../utils/CreateURQLClient";
 import InputField from "../component/Inputs/InputFIeld";
@@ -19,7 +19,7 @@ function Enter(props) {
             </Head>
             <Main>
                 <Center my={10}>
-                    <Box my={10} width={{base:"250px", md:"800px"}} borderRadius={"lg"} bg={"black"}>
+                    <Box my={10} width={{base:"350px", md:"800px"}} borderRadius={"lg"} bg={"black"}>
                         <Center>
                             <Heading py={5} color={"white"}>
                                 {!isClicked?"Вход":"Регистрация"}
@@ -50,7 +50,7 @@ function Enter(props) {
                                                 label={"Введите Логин"}
                                                 name={"login"}
                                                 type={"name"}
-                                                width={{base:"225px",md:"650px"} as never}
+                                                width={{base:"250px",md:"650px"} as never}
                                             />
                                             {
                                                 isClicked
@@ -60,7 +60,7 @@ function Enter(props) {
                                                     label={"Введите Почту"}
                                                     name={"email"}
                                                     type={"email"}
-                                                    width={{base:"225px",md:"650px"} as never}
+                                                    width={{base:"250px",md:"650px"} as never}
                                                 />
                                             }
                                             <InputField
@@ -68,22 +68,18 @@ function Enter(props) {
                                                 label={"Введите Пароль"}
                                                 name={"password"}
                                                 type={"password"}
-                                                width={{base:"225px",md:"650px"} as never}
+                                                width={{base:"250px",md:"650px"} as never}
                                             />
                                             <Box mt={5}>
                                                 <Link onClick={()=>click(!isClicked)} color={"hsl(317 100% 54%)"} textShadow={"0 0 0.125em hsl(0 0% 100% / 0.3), 0 0 0.45em"}>
                                                     Регистрация
                                                 </Link>
                                             </Box>
-                                            <Button isLoading={props.isSubmitting} my={10} width={{base:"225px",md:"650px"} as never} p={2} _hover={{
+                                            <Button isLoading={props.isSubmitting} my={10} width={{base:"250px",md:"650px"} as never} p={2} _hover={{
                                                 background:"hsl(317 100% 54%)",
                                                 color:"black",
                                                 textShadow:"none",
                                             }} sx={{
-                                                '@media screen and (max-width: 540px) ':{
-                                                    width:"25px",
-                                                    height:"25px"
-                                                },
                                                 background:"hsl(323 21% 16%)",
                                                 color:"hsl(317 100% 54%)",
                                                 border:"hsl(317 100% 54%) 0.125em solid",
@@ -92,7 +88,7 @@ function Enter(props) {
                                             }}
                                             type='submit'
                                             >
-                                                {!isClicked?"Вход":"Регистрация"}
+                                                <Text p={5}>{!isClicked?"Вход":"Регистрация"} </Text>
                                             </Button>
                                         </Form>
                                     )}

@@ -236,15 +236,11 @@ export default function Nav() {
                             <NavLink color={colorMode === 'light' ? "black" : "white"} href={"/about"}>О нас</NavLink>
                             <Flex alignItems={'center'}>
                                 <SimpleGrid columns={[2,null,2]} spacingX={"20px"}>
-                                    <Button p={2} _hover={{
+                                    <Button p={4} _hover={{
                                         background:"hsl(317 100% 54%)",
                                         color:"black",
                                         textShadow:"none",
                                     }} sx={{
-                                        '@media screen and (max-width: 540px) ':{
-                                            width:"25px",
-                                            height:"25px"
-                                        },
                                         background:"hsl(323 21% 16%)",
                                         color:"hsl(317 100% 54%)",
                                         border:"hsl(317 100% 54%) 0.125em solid",
