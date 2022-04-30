@@ -11,18 +11,17 @@ import Head from "next/head";
 
 function Enter(props) {
     const router = useRouter();
-    const [isClicked,click] = useState(false)
     return (
         <div>
             <Head>
-                <title>{!isClicked?"Вход":"Зарегестрироваться"}</title>
+                <title>{"Вход"}</title>
             </Head>
             <Main>
                 <Center my={10}>
                     <Box my={10} width={{base:"350px", md:"800px"}} borderRadius={"lg"} bg={"black"}>
                         <Center>
                             <Heading py={5} color={"white"}>
-                                {!isClicked?"Вход":"Регистрация"}
+                                {"Вход"}
                             </Heading>
                         </Center>
                         <Box borderRadius={"lg"} bg={"black"} color={"white"}>
@@ -35,11 +34,9 @@ function Enter(props) {
                                             password:''
                                         }}
                                     onSubmit={async (values, actions) => {
-                                            if(isClicked){
-                                                router.push("/")
-                                            }else if(!isClicked && (values.login === "admin"&&values.password === "admin")){
-                                                router.push("/admin")
-                                            }
+                                        if((values.login === "admin"&&values.password === "admin")){
+                                            router.push("/admin")
+                                        }
                                     }}
                                 >
                                     {(props) => (
@@ -52,17 +49,6 @@ function Enter(props) {
                                                 type={"name"}
                                                 width={{base:"250px",md:"650px"} as never}
                                             />
-                                            {
-                                                isClicked
-                                                &&
-                                                <InputField
-                                                    placeholder={"Почта"}
-                                                    label={"Введите Почту"}
-                                                    name={"email"}
-                                                    type={"email"}
-                                                    width={{base:"250px",md:"650px"} as never}
-                                                />
-                                            }
                                             <InputField
                                                 placeholder={"Пароль"}
                                                 label={"Введите Пароль"}
@@ -70,11 +56,6 @@ function Enter(props) {
                                                 type={"password"}
                                                 width={{base:"250px",md:"650px"} as never}
                                             />
-                                            <Box mt={5}>
-                                                <Link onClick={()=>click(!isClicked)} color={"hsl(317 100% 54%)"} textShadow={"0 0 0.125em hsl(0 0% 100% / 0.3), 0 0 0.45em"}>
-                                                    Регистрация
-                                                </Link>
-                                            </Box>
                                             <Button isLoading={props.isSubmitting} my={10} width={{base:"250px",md:"650px"} as never} p={2} _hover={{
                                                 background:"hsl(317 100% 54%)",
                                                 color:"black",
@@ -88,7 +69,7 @@ function Enter(props) {
                                             }}
                                             type='submit'
                                             >
-                                                <Text p={5}>{!isClicked?"Вход":"Регистрация"} </Text>
+                                                <Text p={5}>{"Вход"} </Text>
                                             </Button>
                                         </Form>
                                     )}

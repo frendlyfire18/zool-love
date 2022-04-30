@@ -1,4 +1,4 @@
-import React, {ReactNode, useState} from 'react';
+import React, {ReactNode, useEffect, useState} from 'react';
 import {
     Text,
     Image,
@@ -24,11 +24,19 @@ import {
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import {FiShoppingCart,FiTrash2} from "react-icons/fi";
 import {HamburgerIcon,CloseIcon} from "@chakra-ui/icons"
-
-import client from "../lib/Commerce";
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    Lorem
+} from '@chakra-ui/react'
 import {selectCart} from "../redux/feature/counter/counterSlice";
 import {useAppDispatch, useAppSelector} from "../redux/hooks";
-import {useGetOneProductQuery} from "../generated/graphql";
+import {useGetAllProductsQuery, useGetOneProductQuery} from "../generated/graphql";
 
 import {
     deleteFromCart,
@@ -36,6 +44,11 @@ import {
     decrement
 } from '../redux/feature/counter/counterSlice';
 import {useRouter} from "next/router";
+import {Form, Formik} from "formik";
+import InputField from "./Inputs/InputFIeld";
+import InputTextAreaField from "./Inputs/InputTextAresField";
+import InputSelectField from "./Inputs/InputSelectField";
+import FixedInputSelectField from "./Inputs/FixedInputSelectField";
 
 const NavLink = ({ children,color,href }: { children: ReactNode,color:string,href:string }) => {
     const router = useRouter()
@@ -56,12 +69,35 @@ const NavLink = ({ children,color,href }: { children: ReactNode,color:string,hre
         </Link>
     )
 }
-const CartItem=({item,color})=>{
+
+const BuyItem=({item})=>{
+    const [variables,setV] = useState({_id: item.id})
+    const [{data,fetching}] = useGetOneProductQuery({
+        variables,
+    })
+    return(
+        <>
+            <Box>
+                <Text>
+                    {data.getOneProduct.name} : {item.num}, Цена: {(parseInt(item.num)*parseInt(data.getOneProduct.price))}₽
+                </Text>
+            </Box>
+        </>
+    )
+}
+
+const CartItem=({sum,hook,item,color})=>{
     const dispatch = useAppDispatch();
     const [variables,setV] = useState({_id: item.id})
     const [{data,fetching}] = useGetOneProductQuery({
         variables,
     })
+    useEffect(() => {
+        if(data){
+            hook(sum+parseInt(data?.getOneProduct.price))
+        }
+    },[fetching])
+
     if(!data||fetching){
         return (
             <>
@@ -87,13 +123,18 @@ const CartItem=({item,color})=>{
                     />
                     <SimpleGrid columns={[1,null,3]} mr={5}>
                         <Button onClick={()=>{
-                            dispatch(increment({id:item.id}))
+                            if(sum<(parseInt(data?.getOneProduct.price)*data?.getOneProduct.value)){
+                                dispatch(increment({id:item.id}))
+                                hook(sum+parseInt(data?.getOneProduct.price))
+                            }
                         }} p={2} colorScheme={"green"}>+</Button>
                         <Box width={"50px"} color={color} mx={5} p={2}>
                             {item.num}
                         </Box>
                         <Button onClick={()=>{
                             dispatch(decrement({id:item.id}))
+                            if(sum>parseInt(data?.getOneProduct.price))
+                                hook(sum-parseInt(data?.getOneProduct.price))
                         }} p={2} colorScheme={"red"}>-</Button>
                     </SimpleGrid>
                     <Box color={color}>
@@ -101,6 +142,7 @@ const CartItem=({item,color})=>{
                     </Box>
                     <Button mr={5} colorScheme={"red"} ml={5} onClick={()=>{
                         dispatch(deleteFromCart({id:item.id,num:1}))
+                        hook(sum-parseInt(data?.getOneProduct.price))
                     }}>
                         <FiTrash2/>
                     </Button>
@@ -111,8 +153,14 @@ const CartItem=({item,color})=>{
     )
 }
 
+
 const Cart =({color})=>{
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [sum,setSum] = useState(0)
     const cart = useAppSelector(selectCart);
+    useEffect(() => {
+        console.log(sum)
+    },[sum])
     return(
         <>
             <Menu>
@@ -146,9 +194,102 @@ const Cart =({color})=>{
                         cart?.length!==0
                         &&
                         cart?.map(item=>(
-                            <CartItem color={color} item={item}/>
+                            <CartItem sum={sum} hook={setSum} color={color} item={item}/>
                         ))
                     }
+                    <Button onClick={onOpen} colorScheme={"green"} mx={10}>
+                        Купить все за {sum} ₽
+                    </Button>
+                    <Modal isOpen={isOpen} onClose={onClose}>
+                        <ModalOverlay />
+                        <ModalContent>
+                            <ModalHeader>Оформление заказа (Дотавка только по Антрациту)</ModalHeader>
+                            <ModalCloseButton />
+                            <ModalBody>
+                                <Formik
+                                    initialValues={
+                                        {
+                                            name:'',
+                                            lastname:'',
+                                            number:'',
+                                            adress:'',
+                                            email:''
+                                        }}
+                                    onSubmit={async (values, actions) => {
+                                        console.log(values,cart)
+                                        alert("Письмо о подтверждении заказа было отослано на почту " + values.email)
+                                        onClose()
+                                    }}
+                                >
+                                    {(props) => (
+                                        <Form
+                                        >
+                                            <InputField
+                                                placeholder={"Введите свое имя"}
+                                                label={"Ваше имя"}
+                                                name={"name"}
+                                                type={"name"}
+                                                width={"100%" as never}
+                                            />
+                                            <InputField
+                                                placeholder={"Введите свою фамилию"}
+                                                label={"Ваша фамилия"}
+                                                name={"lastname"}
+                                                type={"text"}
+                                                width={"100%" as never}
+                                            />
+                                            <InputField
+                                                placeholder={"Введите ваш контактный номер"}
+                                                label={"Ваш контактный номерва"}
+                                                name={"number"}
+                                                type={"text"}
+                                                width={"100%" as never}
+                                            />
+                                            <InputField
+                                                placeholder={"Введите вашу почту"}
+                                                label={"Ваша почта"}
+                                                name={"email"}
+                                                type={"email"}
+                                                width={"100%" as never}
+                                            />
+                                            <InputField
+                                                placeholder={"Введите ваш адрес"}
+                                                label={"Ваш адрес"}
+                                                name={"adress"}
+                                                type={"text"}
+                                                width={"100%" as never}
+                                            />
+                                            <Button
+                                                isDisabled={(cart.length === 0)}
+                                                mt={4}
+                                                mb={10}
+                                                width={"100%"}
+                                                bg='black'
+                                                color={"white"}
+                                                isLoading={props.isSubmitting}
+                                                type='submit'
+                                            >
+                                                Купить
+                                            </Button>
+                                        </Form>
+                                    )}
+                                </Formik>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Stack>
+                                    {
+                                        cart?.length!==0
+                                        &&
+                                        cart?.map(item=>(
+                                            <Box>
+                                                <BuyItem item={item}/>
+                                            </Box>
+                                        ))
+                                    }
+                                </Stack>
+                            </ModalFooter>
+                        </ModalContent>
+                    </Modal>
                 </MenuList>
             </Menu>
         </>
