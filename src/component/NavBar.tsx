@@ -31,8 +31,7 @@ import {
     ModalHeader,
     ModalFooter,
     ModalBody,
-    ModalCloseButton,
-    Lorem
+    ModalCloseButton
 } from '@chakra-ui/react'
 import {selectCart} from "../redux/feature/counter/counterSlice";
 import {useAppDispatch, useAppSelector} from "../redux/hooks";
